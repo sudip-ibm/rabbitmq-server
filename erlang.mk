@@ -17,7 +17,7 @@
 ERLANG_MK_FILENAME := $(realpath $(lastword $(MAKEFILE_LIST)))
 export ERLANG_MK_FILENAME
 
-ERLANG_MK_VERSION = 04c473a
+ERLANG_MK_VERSION = 16d60fa
 ERLANG_MK_WITHOUT = 
 
 # Make 3.81 and 3.82 are deprecated.
@@ -3565,7 +3565,7 @@ REBAR_DEPS_DIR = $(DEPS_DIR)
 export REBAR_DEPS_DIR
 
 REBAR3_GIT ?= https://github.com/erlang/rebar3
-REBAR3_COMMIT ?= 3f563feaf1091a1980241adefa83a32dd2eebf7c # 3.20.0
+REBAR3_COMMIT ?= 06aaecd51b0ce828b66bb65a74d3c1fd7833a4ba # 3.22.1 + OTP-27 fixes
 
 CACHE_DEPS ?= 0
 
@@ -4018,7 +4018,7 @@ define dep_autopatch_rebar.erl
 			false -> ok;
 			{_, Files0} ->
 				Files = [begin
-					hd(filelib:wildcard("$(call core_native_path,$(DEPS_DIR)/$1/src/**/" ++ filename:rootname(F) ++ ".*rl")))
+					hd(filelib:wildcard("$(call core_native_path,$(DEPS_DIR)/$1/src/)**/" ++ filename:rootname(F) ++ ".*rl"))
 				end || "src/" ++ F <- Files0],
 				Names = [[" ", case lists:reverse(F) of
 					"lre." ++ Elif -> lists:reverse(Elif);
@@ -4147,8 +4147,8 @@ define dep_autopatch_rebar.erl
 					"\t$$\(CC) -o $$\@ $$\? $$\(LDFLAGS) $$\(ERL_LDFLAGS) $$\(DRV_LDFLAGS) $$\(LDLIBS) $$\(EXE_LDFLAGS)",
 					case {filename:extension(Output), $(PLATFORM)} of
 					    {[], _} -> "\n";
-					    {".so", darwin} -> "-shared\n";
-					    {".dylib", darwin} -> "-shared\n";
+					    {".so", darwin} -> " -shared\n";
+					    {".dylib", darwin} -> " -shared\n";
 					    {_, darwin} -> "\n";
 					    _ -> " -shared\n"
 					end])
@@ -4665,7 +4665,6 @@ define makedep.erl
 	end,
 	MakeDepend = fun
 		(F, Fd, Mod, StartLocation) ->
-			{ok, Filename} = file:pid2name(Fd),
 			case io:parse_erl_form(Fd, undefined, StartLocation) of
 				{ok, AbsData, EndLocation} ->
 					case AbsData of
@@ -5838,7 +5837,7 @@ else
 
 ci:: $(addprefix ci-,$(CI_OTP))
 
-ci-prepare: $(addprefix $(KERL_INSTALL_DIR)/,$(CI_OTP))
+ci-prepare: $(addprefix ci-prepare-,$(CI_OTP))
 
 ci-setup::
 	$(verbose) :
@@ -5850,7 +5849,10 @@ ci_verbose_0 = @echo " CI    " $(1);
 ci_verbose = $(ci_verbose_$(V))
 
 define ci_target
-ci-$1: $(KERL_INSTALL_DIR)/$2
+ci-prepare-$1: $(KERL_INSTALL_DIR)/$2
+	$(verbose) :
+
+ci-$1: ci-prepare-$1
 	$(verbose) $(MAKE) --no-print-directory clean
 	$(ci_verbose) \
 		PATH="$(KERL_INSTALL_DIR)/$2/bin:$(PATH)" \
