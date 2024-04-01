@@ -28,6 +28,7 @@ groups() ->
                               declare_exchange,
                               declare_binding,
                               declare_queue,
+                              delete_queue,
                               publish_to_exchange,
                               publish_and_consume_to_local_classic_queue,
                               consume_from_queue,
@@ -88,6 +89,9 @@ init_per_group(Group, Config0) when Group == client_operations;
             Ch = rabbit_ct_client_helpers:open_channel(Config1, 0),
             %% To be used in consume_from_queue
             #'queue.declare_ok'{} = amqp_channel:call(Ch, #'queue.declare'{queue = <<"test-queue">>,
+                                                                           arguments = [{<<"x-queue-type">>, longstr, <<"classic">>}]}),
+            %% To be used in delete_queue
+            #'queue.declare_ok'{} = amqp_channel:call(Ch, #'queue.declare'{queue = <<"test-queue-to-be-deleted">>,
                                                                            arguments = [{<<"x-queue-type">>, longstr, <<"classic">>}]}),
 
             %% Lower the default Khepri command timeout. By default this is set
@@ -159,6 +163,12 @@ declare_queue(Config) ->
     {_, Ch} = rabbit_ct_client_helpers:open_connection_and_channel(Config, A),
     ?assertExit({{shutdown, {connection_closing, {server_initiated_close, 541, _}}}, _},
                 amqp_channel:call(Ch, #'queue.declare'{queue = <<"test-queue-2">>})).
+
+delete_queue(Config) ->
+    [A | _] = rabbit_ct_broker_helpers:get_node_configs(Config, nodename),
+    {_, Ch} = rabbit_ct_client_helpers:open_connection_and_channel(Config, A),
+    ?assertExit({{shutdown, {connection_closing, {server_initiated_close, 541, _}}}, _},
+                amqp_channel:call(Ch, #'queue.delete'{queue = <<"test-queue-to-be-deleted">>})).
 
 publish_to_exchange(Config) ->
     [A | _] = rabbit_ct_broker_helpers:get_node_configs(Config, nodename),

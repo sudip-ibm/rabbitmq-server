@@ -1313,7 +1313,7 @@ ensure_queue(QoS, State) ->
             case delete_queue(QName, State) of
                 ok ->
                     create_queue(QoS, State);
-                {error, access_refused} = E ->
+                {error, _} = E ->
                     E
             end;
         {error, not_found} ->
@@ -1841,7 +1841,7 @@ maybe_delete_mqtt_qos0_queue(_) ->
     ok.
 
 -spec delete_queue(rabbit_amqqueue:name(), state()) ->
-    ok | {error, access_refused}.
+    ok | {error, access_refused | timeout}.
 delete_queue(QName,
              #state{auth_state = #auth_state{
                                     user = User = #user{username = Username},
@@ -1866,7 +1866,9 @@ delete_queue(QName,
                 {ok, _N} ->
                     ok;
                 ok ->
-                    ok
+                    ok;
+                {error, _} = E ->
+                    E
             end;
         {error, access_refused} = E ->
             E

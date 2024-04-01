@@ -325,15 +325,18 @@ terminate_delete(EmitStats, Reason0,
                                                 fun() -> emit_stats(State) end);
            true      -> ok
         end,
-        %% This try-catch block transforms throws to errors since throws are not
-        %% logged.
-        try
-            %% don't care if the internal delete doesn't return 'ok'.
-            rabbit_amqqueue:internal_delete(Q, ActingUser, Reason0)
-        catch
-            {error, ReasonE} -> error(ReasonE)
-        end,
+        %% don't care if the internal delete doesn't return 'ok'.
+        _ = internal_delete(Q, ActingUser, Reason0),
         BQS1
+    end.
+
+internal_delete(Q, ActingUser, Reason) ->
+    %% This try-catch block transforms throws to errors since throws are not
+    %% logged.
+    try
+        rabbit_amqqueue:internal_delete(Q, ActingUser, Reason)
+    catch
+        {error, ReasonE} -> error(ReasonE)
     end.
 
 terminated_by({terminated_by, auto_delete}) ->
@@ -1443,15 +1446,24 @@ handle_call(stat, _From, State) ->
         ensure_expiry_timer(State),
     reply({ok, BQ:len(BQS), rabbit_queue_consumers:count()}, State1);
 
-handle_call({delete, IfUnused, IfEmpty, ActingUser}, _From,
-            State = #q{backing_queue_state = BQS, backing_queue = BQ}) ->
+handle_call(
+  {delete, IfUnused, IfEmpty, ActingUser}, _From,
+  #q{q = Q, backing_queue_state = BQS, backing_queue = BQ} = State) ->
     IsEmpty  = BQ:is_empty(BQS),
     IsUnused = is_unused(State),
     if
         IfEmpty  and not(IsEmpty)  -> reply({error, not_empty}, State);
         IfUnused and not(IsUnused) -> reply({error,    in_use}, State);
-        true                       -> stop({ok, BQ:len(BQS)},
-                                           State#q{status = {terminated_by, ActingUser}})
+        true ->
+            %% Eagerly try to remove the queue from the database. Don't
+            %% terminate the queue if this fails.
+            case internal_delete(Q, ActingUser, normal) of
+                ok ->
+                    stop({ok, BQ:len(BQS)},
+                          State#q{status = {terminated_by, ActingUser}});
+                {error, _} = Error ->
+                    reply(Error, State)
+            end
     end;
 
 handle_call(purge, _From, State = #q{backing_queue       = BQ,

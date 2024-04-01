@@ -1621,17 +1621,23 @@ delete_immediately_by_resource(Resources) ->
 -spec delete
         (amqqueue:amqqueue(), 'false', 'false', rabbit_types:username()) ->
             qlen() |
+            rabbit_types:error('timeout') |
             {protocol_error, Type :: atom(), Reason :: string(), Args :: term()};
         (amqqueue:amqqueue(), 'true' , 'false', rabbit_types:username()) ->
-            qlen() | rabbit_types:error('in_use') |
+            qlen() |
+            rabbit_types:error('in_use') |
+            rabbit_types:error('timeout') |
             {protocol_error, Type :: atom(), Reason :: string(), Args :: term()};
         (amqqueue:amqqueue(), 'false', 'true', rabbit_types:username()) ->
-            qlen() | rabbit_types:error('not_empty') |
+            qlen() |
+            rabbit_types:error('not_empty') |
+            rabbit_types:error('timeout') |
             {protocol_error, Type :: atom(), Reason :: string(), Args :: term()};
         (amqqueue:amqqueue(), 'true' , 'true', rabbit_types:username()) ->
             qlen() |
             rabbit_types:error('in_use') |
             rabbit_types:error('not_empty') |
+            rabbit_types:error('timeout') |
             {protocol_error, Type :: atom(), Reason :: string(), Args :: term()}.
 delete(Q, IfUnused, IfEmpty, ActingUser) ->
     rabbit_queue_type:delete(Q, IfUnused, IfEmpty, ActingUser).
@@ -1672,6 +1678,11 @@ delete_with(QueueName, ConnPid, IfUnused, IfEmpty, Username, CheckExclusive) whe
             rabbit_misc:precondition_failed("~ts in use", [rabbit_misc:rs(QueueName)]);
         {error, not_empty} ->
             rabbit_misc:precondition_failed("~ts not empty", [rabbit_misc:rs(QueueName)]);
+        {error, timeout} ->
+            rabbit_misc:protocol_error(
+              internal_error,
+              "Could not delete queue '~ts' due to timeout",
+              [rabbit_misc:rs(QueueName)]);
         {error, {exit, _, _}} ->
             %% delete()/delegate:invoke might return {error, {exit, _, _}}
             {ok, 0};
@@ -1791,7 +1802,8 @@ notify_sent_queue_down(QPid) ->
 resume(QPid, ChPid) -> delegate:invoke_no_result(QPid, {gen_server2, cast,
                                                         [{resume, ChPid}]}).
 
--spec internal_delete(amqqueue:amqqueue(), rabbit_types:username()) -> 'ok'.
+-spec internal_delete(amqqueue:amqqueue(), rabbit_types:username()) ->
+    'ok' | rabbit_khepri:timeout_error().
 
 internal_delete(Queue, ActingUser) ->
     internal_delete(Queue, ActingUser, normal).
@@ -1801,6 +1813,8 @@ internal_delete(Queue, ActingUser, Reason) ->
     case rabbit_db_queue:delete(QueueName, Reason) of
         ok ->
             ok;
+        {error, _} = Error ->
+            Error;
         Deletions ->
             _ = rabbit_binding:process_deletions(Deletions),
             rabbit_binding:notify_deletions(Deletions, ?INTERNAL_USER),
