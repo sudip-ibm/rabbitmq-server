@@ -46,67 +46,68 @@ groups() ->
      {unclustered, [], [
                         {uncluster_size_2, [], [add_member]}
                        ]},
-     {clustered, [], [
-                      {cluster_size_2, [], [add_member_2,
-                                            add_member_not_running,
-                                            add_member_classic,
-                                            add_member_wrong_type,
-                                            add_member_already_a_member,
-                                            add_member_not_found,
-                                            delete_member_not_running,
-                                            delete_member_classic,
-                                            delete_member_wrong_type,
-                                            delete_member_queue_not_found,
-                                            delete_member,
-                                            delete_member_not_a_member,
-                                            node_removal_is_quorum_critical]
-                       ++ memory_tests()},
-                      {cluster_size_3, [], [
-                                            cleanup_data_dir,
-                                            channel_handles_ra_event,
-                                            declare_during_node_down,
-                                            simple_confirm_availability_on_leader_change,
-                                            publishing_to_unavailable_queue,
-                                            confirm_availability_on_leader_change,
-                                            recover_from_single_failure,
-                                            recover_from_multiple_failures,
-                                            leadership_takeover,
-                                            delete_declare,
-                                            delete_member_during_node_down,
-                                            metrics_cleanup_on_leadership_takeover,
-                                            metrics_cleanup_on_leader_crash,
-                                            consume_in_minority,
-                                            reject_after_leader_transfer,
-                                            shrink_all,
-                                            rebalance,
-                                            file_handle_reservations,
-                                            file_handle_reservations_above_limit,
-                                            node_removal_is_not_quorum_critical,
-                                            leader_locator_client_local,
-                                            leader_locator_balanced,
-                                            leader_locator_balanced_maintenance,
-                                            leader_locator_balanced_random_maintenance,
-                                            leader_locator_policy,
-                                            status,
-                                            format,
-                                            add_member_2
-                                           ]
-                       ++ all_tests()},
-                      {cluster_size_5, [], [start_queue,
-                                            start_queue_concurrent,
-                                            quorum_cluster_size_3,
-                                            quorum_cluster_size_7,
-                                            node_removal_is_not_quorum_critical,
-                                            select_nodes_with_least_replicas,
-                                            select_nodes_with_least_replicas_node_down
-                                           ]},
-                      {clustered_with_partitions, [],
-                       [
-                        reconnect_consumer_and_publish,
-                        reconnect_consumer_and_wait,
-                        reconnect_consumer_and_wait_channel_down
-                       ]}
-                     ]}
+     {clustered, [],
+      [
+       {cluster_size_2, [], [add_member_2,
+                             add_member_not_running,
+                             add_member_classic,
+                             add_member_wrong_type,
+                             add_member_already_a_member,
+                             add_member_not_found,
+                             delete_member_not_running,
+                             delete_member_classic,
+                             delete_member_wrong_type,
+                             delete_member_queue_not_found,
+                             delete_member,
+                             delete_member_not_a_member,
+                             node_removal_is_quorum_critical]
+        ++ memory_tests()},
+       {cluster_size_3, [], [
+                             cleanup_data_dir,
+                             channel_handles_ra_event,
+                             declare_during_node_down,
+                             simple_confirm_availability_on_leader_change,
+                             publishing_to_unavailable_queue,
+                             confirm_availability_on_leader_change,
+                             recover_from_single_failure,
+                             recover_from_multiple_failures,
+                             leadership_takeover,
+                             delete_declare,
+                             delete_member_during_node_down,
+                             metrics_cleanup_on_leadership_takeover,
+                             metrics_cleanup_on_leader_crash,
+                             consume_in_minority,
+                             reject_after_leader_transfer,
+                             shrink_all,
+                             rebalance,
+                             file_handle_reservations,
+                             file_handle_reservations_above_limit,
+                             node_removal_is_not_quorum_critical,
+                             leader_locator_client_local,
+                             leader_locator_balanced,
+                             leader_locator_balanced_maintenance,
+                             leader_locator_balanced_random_maintenance,
+                             leader_locator_policy,
+                             status,
+                             format,
+                             add_member_2
+                            ]
+        ++ all_tests()},
+       {cluster_size_5, [], [start_queue,
+                             start_queue_concurrent,
+                             quorum_cluster_size_3,
+                             quorum_cluster_size_7,
+                             node_removal_is_not_quorum_critical,
+                             select_nodes_with_least_replicas,
+                             select_nodes_with_least_replicas_node_down
+                            ]},
+       {clustered_with_partitions, [],
+        [
+         reconnect_consumer_and_publish,
+         reconnect_consumer_and_wait,
+         reconnect_consumer_and_wait_channel_down
+        ]}
+      ]}
     ].
 
 all_tests() ->

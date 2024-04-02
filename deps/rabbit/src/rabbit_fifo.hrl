@@ -122,7 +122,7 @@
 
 -record(consumer,
         {cfg = #consumer_cfg{},
-         status = up :: up | suspected_down | cancelled | waiting,
+         status = up :: up | suspected_down | cancelled | fading,
          next_msg_id = 0 :: msg_id(),
          checked_out = #{} :: #{msg_id() => msg()},
          %% max number of messages that can be sent
