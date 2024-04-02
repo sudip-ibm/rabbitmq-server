@@ -2003,6 +2003,10 @@ on_node_down(Node) ->
     {Time, Ret} = timer:tc(fun() -> rabbit_db_queue:delete_transient(filter_transient_queues_to_delete(Node)) end),
     case Ret of
         ok -> ok;
+        {error, timeout} ->
+            rabbit_log:warning("node ~tp failed to delete transient queues due to timeout",
+                               [Node]),
+            ok;
         {QueueNames, Deletions} ->
             case length(QueueNames) of
                 0 -> ok;
