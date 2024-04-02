@@ -1514,7 +1514,8 @@ activate_next_consumer(#?STATE{consumers = Cons,
             {State0, Effects0}
     end.
 
-active_consumer({CKey, #consumer{status = up} = Consumer, _I}) ->
+active_consumer({CKey, #consumer{status = Status} = Consumer, _I})
+  when Status == up orelse Status == fading ->
     {CKey, Consumer};
 active_consumer({_CKey, #consumer{status = _}, I}) ->
     active_consumer(maps:next(I));
