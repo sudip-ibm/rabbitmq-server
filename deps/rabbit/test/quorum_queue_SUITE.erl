@@ -975,6 +975,8 @@ consume_in_minority(Config) ->
     ok.
 
 single_active_consumer_priority_take_over(Config) ->
+    check_quorum_queues_v4_compat(Config),
+
     [Server0, Server1, _Server2] =
         rabbit_ct_broker_helpers:get_node_configs(Config, nodename),
     Ch1 = rabbit_ct_client_helpers:open_channel(Config, Server0),
@@ -1016,6 +1018,7 @@ single_active_consumer_priority_take_over(Config) ->
     ok.
 
 single_active_consumer_priority(Config) ->
+    check_quorum_queues_v4_compat(Config),
     [Server0, Server1, Server2] =
         rabbit_ct_broker_helpers:get_node_configs(Config, nodename),
 
@@ -3862,4 +3865,13 @@ basic_get(Ch, Q, NoAck, Attempt) ->
         _ ->
             timer:sleep(100),
             basic_get(Ch, Q, NoAck, Attempt - 1)
+    end.
+
+check_quorum_queues_v4_compat(Config) ->
+    case rabbit_ct_broker_helpers:is_feature_flag_enabled(Config,
+                                                          quorum_queues_4) of
+        false ->
+            throw({skip, "test needs feature flag quorum_queues_v4"});
+        true ->
+            ok
     end.
