@@ -87,7 +87,8 @@
 -type consumer_meta() :: #{ack => boolean(),
                            username => binary(),
                            prefetch => non_neg_integer(),
-                           args => list()
+                           args => list(),
+                           priority => non_neg_integer()
                            % %% set if and only if credit API v2 is in use
                            % initial_delivery_count => rabbit_queue_type:delivery_count()
                           }.
