@@ -60,6 +60,7 @@
 %%
 -module(supervisor2).
 
+-compile(nowarn_deprecated_callback).
 -behaviour(gen_server).
 
 %% External exports

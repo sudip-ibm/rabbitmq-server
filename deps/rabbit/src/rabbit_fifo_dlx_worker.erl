@@ -27,6 +27,7 @@
 -include_lib("rabbit_common/include/rabbit.hrl").
 % -include_lib("rabbit_common/include/rabbit_framing.hrl").
 
+-compile(nowarn_deprecated_callback).
 -behaviour(gen_server).
 
 -export([start_link/1]).

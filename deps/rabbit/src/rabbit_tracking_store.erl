@@ -6,6 +6,7 @@
 %%
 -module(rabbit_tracking_store).
 
+-compile(nowarn_deprecated_callback).
 -behaviour(gen_server).
 
 %% API

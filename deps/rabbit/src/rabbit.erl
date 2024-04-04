@@ -13,6 +13,8 @@
 
 -behaviour(application).
 
+-compile({nowarn_deprecated_function, [{code, lib_dir, 2}]}).
+
 -export([start/0, boot/0, stop/0,
          stop_and_halt/0, await_startup/0, await_startup/1, await_startup/3,
          status/0, is_running/0, is_serving/0, alarms/0,
