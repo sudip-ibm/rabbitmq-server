@@ -83,6 +83,13 @@ http_file(
     urls = ["https://github.com/erlang/otp/archive/OTP-26.2.2.tar.gz"],
 )
 
+http_file(
+    name = "otp_src_27",
+    downloaded_file_path = "OTP-27.0-rc2.tar.gz",
+    sha256 = "0ac36eccf48dc3a903835cd3cd90388a1df84abacf71ef8edf765097b06efc3b",
+    urls = ["https://github.com/erlang/otp/archive/OTP-27.0-rc2.tar.gz"],
+)
+
 new_git_repository(
     name = "bats",
     build_file = "@//:BUILD.bats",
