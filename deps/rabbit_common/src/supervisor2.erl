@@ -62,6 +62,8 @@
 
 -behaviour(gen_server).
 
+-compile(nowarn_deprecated_callback).
+
 %% External exports
 -export([start_link/2, start_link/3,
          start_child/2, restart_child/2,

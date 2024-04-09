@@ -29,6 +29,8 @@
 
 -behaviour(gen_server).
 
+-compile(nowarn_deprecated_callback).
+
 -export([start_link/1]).
 %% gen_server callbacks
 -export([init/1, terminate/2, handle_continue/2,

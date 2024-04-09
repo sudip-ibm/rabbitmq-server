@@ -8,6 +8,8 @@
 
 -behaviour(gen_server).
 
+-compile(nowarn_deprecated_callback).
+
 %% API
 -export([start_link/0]).
 
