@@ -84,11 +84,11 @@ rabbitmqctl_check_formatted_test(
     target_compatible_with = select({
         "@platforms//os:macos": [
             "@platforms//os:macos",
-            "@elixir_config//:elixir_1_15",
+            "@elixir_config//:elixir_1_16",
         ],
         "//conditions:default": [
             "@platforms//os:linux",
-            "@elixir_config//:elixir_1_15",
+            "@elixir_config//:elixir_1_16",
         ],
     }),
 )
@@ -123,11 +123,11 @@ rabbitmqctl_compile_warnings_as_errors_test(
     target_compatible_with = select({
         "@platforms//os:macos": [
             "@platforms//os:macos",
-            "@elixir_config//:elixir_1_15",
+            "@elixir_config//:elixir_1_16",
         ],
         "//conditions:default": [
             "@platforms//os:linux",
-            "@elixir_config//:elixir_1_15",
+            "@elixir_config//:elixir_1_16",
         ],
     }),
     deps = [

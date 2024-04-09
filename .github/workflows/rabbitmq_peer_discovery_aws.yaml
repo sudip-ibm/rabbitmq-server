@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         otp_version_id:
-          - 26_2
+          - 27
     timeout-minutes: 45
     steps:
     - name: CHECKOUT REPOSITORY

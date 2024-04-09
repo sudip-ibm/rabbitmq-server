@@ -116,12 +116,18 @@ erlang_config.internal_erlang_from_github_release(
     version = "26.2.2",
 )
 
+erlang_config.internal_erlang_from_github_release(
+    name = "27",
+    sha256 = "bbe055468b70d359c66d4ee61cfa52e9f99d93f9a903e7b324d5d067e6e6669c",
+    version = "27.0-rc2",
+)
+
 erlang_config.internal_erlang_from_http_archive(
     name = "git_master",
     extra_make_opts = ["-j 4"],
     strip_prefix = "otp-master",
     url = "https://github.com/erlang/otp/archive/refs/heads/master.tar.gz",
-    version = "27",
+    version = "28",
 )
 
 use_repo(
@@ -152,6 +158,12 @@ elixir_config.internal_elixir_from_github_release(
     version = "1.15.7",
 )
 
+elixir_config.internal_elixir_from_github_release(
+    name = "1_16",
+    sha256 = "2222cb02f6ac8a452c1e889503d837500adfd16ca7fcb43cadcf98e6a1ac28a0",
+    version = "1.16.2",
+)
+
 use_repo(
     elixir_config,
     "elixir_config",
@@ -172,6 +184,8 @@ register_toolchains(
     "@erlang_config//26_1:toolchain_major_minor",
     "@erlang_config//26_2:toolchain_major",
     "@erlang_config//26_2:toolchain_major_minor",
+    "@erlang_config//27:toolchain_major",
+    "@erlang_config//27:toolchain_major_minor",
     "@erlang_config//git_master:toolchain_major",
     "@erlang_config//git_master:toolchain_major_minor",
     "@elixir_config//external:toolchain",
