@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build-publish-dev-bazel:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     services:
       registry:
         image: registry
@@ -132,7 +132,7 @@ jobs:
   summary-oci:
     needs:
     - build-publish-dev-bazel
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: SUMMARY
       run: |
